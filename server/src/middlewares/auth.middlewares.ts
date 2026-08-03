@@ -1,9 +1,14 @@
 import type { FastifyRequest, FastifyReply } from "fastify"
 import { verifyToken } from "../utils/jwt";
 
+export interface AuthUser {
+    permissions: { module: string, access: string}[];
+    branchs: { id: number }[];
+}
+
 declare module 'fastify' {
     interface FastifyRequest {
-        user: any
+        user: AuthUser
     }
 }
 
@@ -12,11 +17,15 @@ export async function authenticate(req:FastifyRequest, res:FastifyReply) {
     const token = req.cookies.user ?? authHeader?.split(' ')[1];
     
     if(!token) {
-        res.code(401).send({ error: 'Autorização não encontrada.'})
-        return
+        return res.code(401).send({ error: 'Autorização não encontrada.'})
     }
 
-    req.user = await verifyToken(token, res)
+    try {
+        req.user = await verifyToken(token)
+        console.log(req.user)
+    } catch {
+        return res.code(401).send({ error: 'Token inválido ou expirado.'})
+    }
 }
 
 export async function checkPermission(req:FastifyRequest, res:FastifyReply) {
