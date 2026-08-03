@@ -4,7 +4,7 @@ export default function App() {
   return (
     <>
       <Routes>
-        <Route path='/' element={ }/>
+        <Route path='/' element={<div>Financeiro Novamix</div>}/>
       </Routes>
     </>
   )
