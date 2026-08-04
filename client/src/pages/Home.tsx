@@ -14,6 +14,10 @@ export default function Home() {
             credentials: 'include',
         })
             .then(async (res) => {
+                if (res.status === 401) {
+                    window.location.href = 'https://hub.lojanovamix.com.br'
+                    return
+                }
                 const data = await res.json()
                 setStatus(res.ok ? 'ok' : 'error')
                 setMessage(res.ok ? data.message : `${res.status}: ${data.error}`)
