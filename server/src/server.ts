@@ -3,6 +3,7 @@ import fastify from 'fastify';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
 import { dataRoutes } from './routes/data.routes';
+import { financeiroRoutes } from './routes/financeiro.routes';
 import { connCiss } from './database/ciss.database.ts';
 
 const app = fastify();
@@ -22,6 +23,7 @@ if(!process.env.SERVER_PORT) {
 
 app.register(cookie);
 app.register(dataRoutes);
+app.register(financeiroRoutes);
 
 async function start() {
     await app.listen({ host: '0.0.0.0', port: process.env.SERVER_PORT})
