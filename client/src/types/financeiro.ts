@@ -35,3 +35,19 @@ export interface CuponsRow extends BaseRow {
 export interface TicketMedioRow extends BaseRow {
     TICKET_MEDIO: number
 }
+
+export interface EstoqueRow extends BaseRow {
+    VALOR_ESTOQUE: number
+}
+
+export interface ContasReceberAbertoRow extends BaseRow {
+    VALOR_RECEBER_ABERTO: number
+}
+
+export interface ContasPagarAbertoRow extends BaseRow {
+    VALOR_PAGAR_ABERTO: number
+}
+
+export interface LiquidezCorrenteRow extends BaseRow {
+    LIQUIDEZ_CORRENTE: number
+}

@@ -47,6 +47,25 @@ async function executarRelatorio(req: FastifyRequest, res: FastifyReply, arquivo
     }
 }
 
+/**
+ * Métricas de posição (estoque, contas a receber/pagar em aberto, liquidez corrente)
+ * são saldo "agora", não soma de um período — por isso não recebem inicio/fim.
+ */
+async function executarRelatorioAtual(req: FastifyRequest, res: FastifyReply, arquivo: string) {
+    const filiais = await resolveFiliais(req, res)
+    if (!filiais) return
+
+    const sql = loadQueryFinanceiro(arquivo).replace('{{FILIAIS}}', filiais.join(','))
+
+    const conn = await connCiss()
+    try {
+        const data = await conn.query(sql)
+        res.send(data)
+    } finally {
+        await conn.close()
+    }
+}
+
 export async function getMe(req: FastifyRequest, res: FastifyReply) {
     const permission = await checkPermission(req, res)
     if (!permission) return
@@ -83,4 +102,20 @@ export async function getNumeroCupons(req: FastifyRequest, res: FastifyReply) {
 
 export async function getTicketMedio(req: FastifyRequest, res: FastifyReply) {
     await executarRelatorio(req, res, 'valor_ticket_medio.sql')
+}
+
+export async function getValorEstoque(req: FastifyRequest, res: FastifyReply) {
+    await executarRelatorioAtual(req, res, 'valor_estoque.sql')
+}
+
+export async function getContasReceberAberto(req: FastifyRequest, res: FastifyReply) {
+    await executarRelatorioAtual(req, res, 'contas_receber_aberto.sql')
+}
+
+export async function getContasPagarAberto(req: FastifyRequest, res: FastifyReply) {
+    await executarRelatorioAtual(req, res, 'contas_pagar_aberto.sql')
+}
+
+export async function getLiquidezCorrente(req: FastifyRequest, res: FastifyReply) {
+    await executarRelatorioAtual(req, res, 'liquidez_corrente.sql')
 }

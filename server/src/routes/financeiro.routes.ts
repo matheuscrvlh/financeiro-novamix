@@ -8,6 +8,10 @@ import {
     getDevolucoes,
     getNumeroCupons,
     getTicketMedio,
+    getValorEstoque,
+    getContasReceberAberto,
+    getContasPagarAberto,
+    getLiquidezCorrente,
 } from '../controllers/financeiro.controller'
 
 export function financeiroRoutes(fastify) {
@@ -19,4 +23,8 @@ export function financeiroRoutes(fastify) {
     fastify.get('/financeiro/devolucoes', { preHandler: [authenticate] }, getDevolucoes)
     fastify.get('/financeiro/cupons', { preHandler: [authenticate] }, getNumeroCupons)
     fastify.get('/financeiro/ticket-medio', { preHandler: [authenticate] }, getTicketMedio)
+    fastify.get('/financeiro/valor-estoque', { preHandler: [authenticate] }, getValorEstoque)
+    fastify.get('/financeiro/contas-receber-aberto', { preHandler: [authenticate] }, getContasReceberAberto)
+    fastify.get('/financeiro/contas-pagar-aberto', { preHandler: [authenticate] }, getContasPagarAberto)
+    fastify.get('/financeiro/liquidez-corrente', { preHandler: [authenticate] }, getLiquidezCorrente)
 }

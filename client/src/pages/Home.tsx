@@ -6,12 +6,17 @@ import DateRangeFilter from '../components/DateRangeFilter'
 import KpiCard from '../components/KpiCard'
 import { useMe } from '../hooks/useMe'
 import { useRelatorio } from '../hooks/useRelatorio'
-import { formatCurrency, formatNumber } from '../lib/format'
+import { useRelatorioAtual } from '../hooks/useRelatorioAtual'
+import { formatCurrency, formatNumber, formatRatio } from '../lib/format'
 import { comFiltroEcommerce } from '../constants/filiais'
 import type {
     CancelamentosRow,
+    ContasPagarAbertoRow,
+    ContasReceberAbertoRow,
     CuponsRow,
     DevolucoesRow,
+    EstoqueRow,
+    LiquidezCorrenteRow,
     LucroBrutoRow,
     LucroLiquidoRow,
     TicketMedioRow,
@@ -43,6 +48,11 @@ export default function Home() {
     const devolucoes = useRelatorio<DevolucoesRow>('/financeiro/devolucoes', inicio, fim, habilitado)
     const cupons = useRelatorio<CuponsRow>('/financeiro/cupons', inicio, fim, habilitado)
     const ticketMedio = useRelatorio<TicketMedioRow>('/financeiro/ticket-medio', inicio, fim, habilitado)
+
+    const valorEstoque = useRelatorioAtual<EstoqueRow>('/financeiro/valor-estoque', habilitado)
+    const contasReceber = useRelatorioAtual<ContasReceberAbertoRow>('/financeiro/contas-receber-aberto', habilitado)
+    const contasPagar = useRelatorioAtual<ContasPagarAbertoRow>('/financeiro/contas-pagar-aberto', habilitado)
+    const liquidezCorrente = useRelatorioAtual<LiquidezCorrenteRow>('/financeiro/liquidez-corrente', habilitado)
 
     if (loadingMe) {
         return (
@@ -157,6 +167,56 @@ export default function Home() {
                         branches={branches}
                         loading={ticketMedio.loading}
                         erro={ticketMedio.erro}
+                    />
+                </div>
+
+                <h2 className='text-lg font-semibold text-gray-text dark:text-dark-text mt-10 mb-1'>
+                    Posição atual
+                </h2>
+                <p className='text-sm text-gray-dark dark:text-dark-text-muted mb-4'>
+                    Saldo de agora — não é afetado pelo filtro de período acima.
+                </p>
+
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+                    <KpiCard
+                        titulo='Valor em estoque'
+                        rows={valorEstoque.rows}
+                        valueKey='VALOR_ESTOQUE'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={branches}
+                        loading={valorEstoque.loading}
+                        erro={valorEstoque.erro}
+                    />
+                    <KpiCard
+                        titulo='A receber em aberto'
+                        rows={contasReceber.rows}
+                        valueKey='VALOR_RECEBER_ABERTO'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={branches}
+                        loading={contasReceber.loading}
+                        erro={contasReceber.erro}
+                    />
+                    <KpiCard
+                        titulo='A pagar em aberto'
+                        rows={contasPagar.rows}
+                        valueKey='VALOR_PAGAR_ABERTO'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={branches}
+                        loading={contasPagar.loading}
+                        erro={contasPagar.erro}
+                    />
+                    <KpiCard
+                        titulo='Liquidez corrente'
+                        rows={liquidezCorrente.rows}
+                        valueKey='LIQUIDEZ_CORRENTE'
+                        formatValor={formatRatio}
+                        filial={filial}
+                        branches={branches}
+                        loading={liquidezCorrente.loading}
+                        erro={liquidezCorrente.erro}
                     />
                 </div>
             </section>
