@@ -1,13 +1,21 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Logo from '../components/Logo'
 import Footer from '../components/Footer'
 import FilialFilter from '../components/FilialFilter'
 import DateRangeFilter from '../components/DateRangeFilter'
+import KpiCard from '../components/KpiCard'
 import { useMe } from '../hooks/useMe'
-import { apiGet } from '../lib/api'
-import { formatCurrency } from '../lib/format'
-import { nomeFilial } from '../constants/filiais'
-import type { VendaBrutaRow } from '../types/financeiro'
+import { useRelatorio } from '../hooks/useRelatorio'
+import { formatCurrency, formatNumber } from '../lib/format'
+import type {
+    CancelamentosRow,
+    CuponsRow,
+    DevolucoesRow,
+    LucroBrutoRow,
+    LucroLiquidoRow,
+    TicketMedioRow,
+    VendaBrutaRow,
+} from '../types/financeiro'
 
 function defaultInicio() {
     const now = new Date()
@@ -25,44 +33,15 @@ export default function Home() {
     const [fim, setFim] = useState(defaultFim())
     const [filial, setFilial] = useState<number | 'todas'>('todas')
 
-    const [rows, setRows] = useState<VendaBrutaRow[]>([])
-    const [erroDados, setErroDados] = useState<string | null>(null)
-    const [loadedKey, setLoadedKey] = useState<string | null>(null)
+    const habilitado = me !== null
 
-    const requestKey = `${inicio}|${fim}`
-    const loadingDados = me !== null && loadedKey !== requestKey
-
-    useEffect(() => {
-        if (!me) return
-
-        let cancelled = false
-
-        apiGet<VendaBrutaRow[]>('/financeiro/venda-bruta', { inicio, fim })
-            .then((data) => {
-                if (cancelled) return
-                setRows(data)
-                setErroDados(null)
-                setLoadedKey(requestKey)
-            })
-            .catch((err) => {
-                if (cancelled) return
-                setErroDados(err.message)
-                setLoadedKey(requestKey)
-            })
-
-        return () => {
-            cancelled = true
-        }
-    }, [me, inicio, fim, requestKey])
-
-    const linhasFiltradas = filial === 'todas' ? rows : rows.filter((row) => row.IDEMPRESA === filial)
-
-    const totalPeriodo = linhasFiltradas.reduce((total, row) => total + Number(row.VALOR_VENDA_BRUTA), 0)
-
-    const totalPorFilial = rows.reduce<Record<number, number>>((acc, row) => {
-        acc[row.IDEMPRESA] = (acc[row.IDEMPRESA] ?? 0) + Number(row.VALOR_VENDA_BRUTA)
-        return acc
-    }, {})
+    const vendaBruta = useRelatorio<VendaBrutaRow>('/financeiro/venda-bruta', inicio, fim, habilitado)
+    const lucroBruto = useRelatorio<LucroBrutoRow>('/financeiro/lucro-bruto', inicio, fim, habilitado)
+    const lucroLiquido = useRelatorio<LucroLiquidoRow>('/financeiro/lucro-liquido', inicio, fim, habilitado)
+    const cancelamentos = useRelatorio<CancelamentosRow>('/financeiro/cancelamentos', inicio, fim, habilitado)
+    const devolucoes = useRelatorio<DevolucoesRow>('/financeiro/devolucoes', inicio, fim, habilitado)
+    const cupons = useRelatorio<CuponsRow>('/financeiro/cupons', inicio, fim, habilitado)
+    const ticketMedio = useRelatorio<TicketMedioRow>('/financeiro/ticket-medio', inicio, fim, habilitado)
 
     if (loadingMe) {
         return (
@@ -92,7 +71,7 @@ export default function Home() {
                 </a>
             </header>
 
-            <section className='flex-1 w-full max-w-5xl mx-auto px-6 py-10'>
+            <section className='flex-1 w-full max-w-6xl mx-auto px-6 py-10'>
                 <h1 className='text-2xl font-semibold text-gray-text dark:text-dark-text mb-1'>
                     Financeiro Novamix
                 </h1>
@@ -105,39 +84,78 @@ export default function Home() {
                     <DateRangeFilter inicio={inicio} fim={fim} onChangeInicio={setInicio} onChangeFim={setFim} />
                 </div>
 
-                <div className='rounded-xl border border-gray-base/30 bg-white dark:bg-dark-surface dark:border-dark-border p-6 shadow-sm mb-6'>
-                    <span className='text-sm font-medium text-gray-text dark:text-dark-text'>
-                        Venda bruta {filial === 'todas' ? '— todas as filiais' : `— ${nomeFilial(filial)}`}
-                    </span>
-
-                    {erroDados && (
-                        <div className='mt-3 rounded-lg px-4 py-3 text-sm font-medium bg-red-light/10 text-red-base'>
-                            {erroDados}
-                        </div>
-                    )}
-
-                    {!erroDados && (
-                        <div className='mt-3 text-3xl font-semibold text-gray-text dark:text-dark-text'>
-                            {loadingDados ? '...' : formatCurrency(totalPeriodo)}
-                        </div>
-                    )}
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+                    <KpiCard
+                        titulo='Venda bruta'
+                        rows={vendaBruta.rows}
+                        valueKey='VALOR_VENDA_BRUTA'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={me.branches}
+                        loading={vendaBruta.loading}
+                        erro={vendaBruta.erro}
+                    />
+                    <KpiCard
+                        titulo='Lucro bruto'
+                        rows={lucroBruto.rows}
+                        valueKey='LUCRO_BRUTO'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={me.branches}
+                        loading={lucroBruto.loading}
+                        erro={lucroBruto.erro}
+                    />
+                    <KpiCard
+                        titulo='Lucro líquido'
+                        rows={lucroLiquido.rows}
+                        valueKey='LUCRO_LIQUIDO'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={me.branches}
+                        loading={lucroLiquido.loading}
+                        erro={lucroLiquido.erro}
+                    />
+                    <KpiCard
+                        titulo='Cancelamentos'
+                        rows={cancelamentos.rows}
+                        valueKey='VALOR_CANCELAMENTOS'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={me.branches}
+                        loading={cancelamentos.loading}
+                        erro={cancelamentos.erro}
+                    />
+                    <KpiCard
+                        titulo='Devoluções'
+                        rows={devolucoes.rows}
+                        valueKey='VALOR_DEVOLUCOES'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={me.branches}
+                        loading={devolucoes.loading}
+                        erro={devolucoes.erro}
+                    />
+                    <KpiCard
+                        titulo='Cupons'
+                        rows={cupons.rows}
+                        valueKey='N_CUPONS'
+                        formatValor={formatNumber}
+                        filial={filial}
+                        branches={me.branches}
+                        loading={cupons.loading}
+                        erro={cupons.erro}
+                    />
+                    <KpiCard
+                        titulo='Ticket médio'
+                        rows={ticketMedio.rows}
+                        valueKey='TICKET_MEDIO'
+                        formatValor={formatCurrency}
+                        filial={filial}
+                        branches={me.branches}
+                        loading={ticketMedio.loading}
+                        erro={ticketMedio.erro}
+                    />
                 </div>
-
-                {filial === 'todas' && me.branches.length > 1 && (
-                    <div className='rounded-xl border border-gray-base/30 bg-white dark:bg-dark-surface dark:border-dark-border p-6 shadow-sm'>
-                        <span className='text-sm font-medium text-gray-text dark:text-dark-text'>Por filial</span>
-                        <ul className='mt-3 divide-y divide-gray-base/20 dark:divide-dark-border'>
-                            {me.branches.map((id) => (
-                                <li key={id} className='flex items-center justify-between py-2 text-sm'>
-                                    <span className='text-gray-text dark:text-dark-text'>{nomeFilial(id)}</span>
-                                    <span className='font-medium text-gray-text dark:text-dark-text'>
-                                        {formatCurrency(totalPorFilial[id] ?? 0)}
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
             </section>
 
             <div className='pb-6'>
