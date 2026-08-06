@@ -36,7 +36,7 @@ async function executarRelatorio(req: FastifyRequest, res: FastifyReply, arquivo
     const periodo = resolvePeriodo(req, res)
     if (!periodo) return
 
-    const sql = loadQueryFinanceiro(arquivo).replace('{{FILIAIS}}', filiais.join(','))
+    const sql = loadQueryFinanceiro(arquivo).replaceAll('{{FILIAIS}}', filiais.join(','))
 
     const conn = await connCiss()
     try {
@@ -55,7 +55,7 @@ async function executarRelatorioAtual(req: FastifyRequest, res: FastifyReply, ar
     const filiais = await resolveFiliais(req, res)
     if (!filiais) return
 
-    const sql = loadQueryFinanceiro(arquivo).replace('{{FILIAIS}}', filiais.join(','))
+    const sql = loadQueryFinanceiro(arquivo).replaceAll('{{FILIAIS}}', filiais.join(','))
 
     const conn = await connCiss()
     try {
