@@ -8,8 +8,7 @@ type KpiCardProps<T extends BaseRow> = {
     rows: T[]
     valueKey: keyof T
     formatValor: (value: number) => string
-    filial: number | 'todas'
-    branches: number[]
+    selecionadas: number[]
     loading: boolean
     erro: string | null
 }
@@ -19,20 +18,18 @@ export default function KpiCard<T extends BaseRow>({
     rows,
     valueKey,
     formatValor,
-    filial,
-    branches,
+    selecionadas,
     loading,
     erro,
 }: KpiCardProps<T>) {
-    const idAlvo = filial === 'todas' ? TOTAL_FILIAIS : filial
-    const linhaAlvo = rows.find((row) => row.IDEMPRESA === idAlvo)
-    const total = linhaAlvo ? Number(linhaAlvo[valueKey]) : 0
+    const linhaTotal = rows.find((row) => row.IDEMPRESA === TOTAL_FILIAIS)
+    const total = linhaTotal ? Number(linhaTotal[valueKey]) : 0
 
     return (
         <div className='rounded-xl border border-gray-base/30 bg-white dark:bg-dark-surface dark:border-dark-border p-6 shadow-sm'>
             <span className='text-sm font-medium text-gray-text dark:text-dark-text'>
                 {titulo}
-                {filial !== 'todas' && ` — ${nomeFilial(filial)}`}
+                {selecionadas.length === 1 && ` — ${nomeFilial(selecionadas[0])}`}
             </span>
 
             {erro && (
@@ -47,9 +44,9 @@ export default function KpiCard<T extends BaseRow>({
                 </div>
             )}
 
-            {!erro && filial === 'todas' && branches.length > 1 && (
+            {!erro && selecionadas.length > 1 && (
                 <ul className='mt-4 divide-y divide-gray-base/20 dark:divide-dark-border'>
-                    {branches.map((id) => {
+                    {selecionadas.map((id) => {
                         const linha = rows.find((row) => row.IDEMPRESA === id)
                         const valor = linha ? Number(linha[valueKey]) : 0
 

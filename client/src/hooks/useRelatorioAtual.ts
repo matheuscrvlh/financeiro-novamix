@@ -2,35 +2,37 @@ import { useEffect, useState } from 'react'
 import { apiGet } from '../lib/api'
 import type { BaseRow } from '../types/financeiro'
 
-export function useRelatorioAtual<T extends BaseRow>(endpoint: string, enabled: boolean) {
+export function useRelatorioAtual<T extends BaseRow>(endpoint: string, filiais: number[], enabled: boolean) {
     const [rows, setRows] = useState<T[]>([])
     const [erro, setErro] = useState<string | null>(null)
-    const [carregado, setCarregado] = useState(false)
+    const [loadedKey, setLoadedKey] = useState<string | null>(null)
 
-    const loading = enabled && !carregado
+    const filiaisKey = filiais.join(',')
+    const requestKey = `${endpoint}|${filiaisKey}`
+    const loading = enabled && loadedKey !== requestKey
 
     useEffect(() => {
         if (!enabled) return
 
         let cancelled = false
 
-        apiGet<T[]>(endpoint)
+        apiGet<T[]>(endpoint, { filiais: filiaisKey })
             .then((data) => {
                 if (cancelled) return
                 setRows(data)
                 setErro(null)
-                setCarregado(true)
+                setLoadedKey(requestKey)
             })
             .catch((err) => {
                 if (cancelled) return
                 setErro(err.message)
-                setCarregado(true)
+                setLoadedKey(requestKey)
             })
 
         return () => {
             cancelled = true
         }
-    }, [enabled, endpoint])
+    }, [enabled, endpoint, filiaisKey, requestKey])
 
     return { rows, loading, erro }
 }

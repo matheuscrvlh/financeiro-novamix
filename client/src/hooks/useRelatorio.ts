@@ -2,12 +2,19 @@ import { useEffect, useState } from 'react'
 import { apiGet } from '../lib/api'
 import type { BaseRow } from '../types/financeiro'
 
-export function useRelatorio<T extends BaseRow>(endpoint: string, inicio: string, fim: string, enabled: boolean) {
+export function useRelatorio<T extends BaseRow>(
+    endpoint: string,
+    inicio: string,
+    fim: string,
+    filiais: number[],
+    enabled: boolean
+) {
     const [rows, setRows] = useState<T[]>([])
     const [erro, setErro] = useState<string | null>(null)
     const [loadedKey, setLoadedKey] = useState<string | null>(null)
 
-    const requestKey = `${endpoint}|${inicio}|${fim}`
+    const filiaisKey = filiais.join(',')
+    const requestKey = `${endpoint}|${inicio}|${fim}|${filiaisKey}`
     const loading = enabled && loadedKey !== requestKey
 
     useEffect(() => {
@@ -15,7 +22,7 @@ export function useRelatorio<T extends BaseRow>(endpoint: string, inicio: string
 
         let cancelled = false
 
-        apiGet<T[]>(endpoint, { inicio, fim })
+        apiGet<T[]>(endpoint, { inicio, fim, filiais: filiaisKey })
             .then((data) => {
                 if (cancelled) return
                 setRows(data)
@@ -31,7 +38,7 @@ export function useRelatorio<T extends BaseRow>(endpoint: string, inicio: string
         return () => {
             cancelled = true
         }
-    }, [enabled, endpoint, inicio, fim, requestKey])
+    }, [enabled, endpoint, inicio, fim, filiaisKey, requestKey])
 
     return { rows, loading, erro }
 }
