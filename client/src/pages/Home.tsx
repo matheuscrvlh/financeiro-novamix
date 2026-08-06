@@ -7,6 +7,7 @@ import KpiCard from '../components/KpiCard'
 import { useMe } from '../hooks/useMe'
 import { useRelatorio } from '../hooks/useRelatorio'
 import { formatCurrency, formatNumber } from '../lib/format'
+import { comFiltroEcommerce } from '../constants/filiais'
 import type {
     CancelamentosRow,
     CuponsRow,
@@ -59,6 +60,8 @@ export default function Home() {
         )
     }
 
+    const branches = comFiltroEcommerce(me.branches)
+
     return (
         <main className='w-full min-h-screen bg-gray dark:bg-dark-bg flex flex-col'>
             <header className='w-full bg-white dark:bg-dark-surface shadow-sm flex items-center justify-between px-6 py-3'>
@@ -80,7 +83,7 @@ export default function Home() {
                 </p>
 
                 <div className='flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between'>
-                    <FilialFilter branches={me.branches} selected={filial} onChange={setFilial} />
+                    <FilialFilter branches={branches} selected={filial} onChange={setFilial} />
                     <DateRangeFilter inicio={inicio} fim={fim} onChangeInicio={setInicio} onChangeFim={setFim} />
                 </div>
 
@@ -91,7 +94,7 @@ export default function Home() {
                         valueKey='VALOR_VENDA_BRUTA'
                         formatValor={formatCurrency}
                         filial={filial}
-                        branches={me.branches}
+                        branches={branches}
                         loading={vendaBruta.loading}
                         erro={vendaBruta.erro}
                     />
@@ -101,7 +104,7 @@ export default function Home() {
                         valueKey='LUCRO_BRUTO'
                         formatValor={formatCurrency}
                         filial={filial}
-                        branches={me.branches}
+                        branches={branches}
                         loading={lucroBruto.loading}
                         erro={lucroBruto.erro}
                     />
@@ -111,7 +114,7 @@ export default function Home() {
                         valueKey='LUCRO_LIQUIDO'
                         formatValor={formatCurrency}
                         filial={filial}
-                        branches={me.branches}
+                        branches={branches}
                         loading={lucroLiquido.loading}
                         erro={lucroLiquido.erro}
                     />
@@ -121,7 +124,7 @@ export default function Home() {
                         valueKey='VALOR_CANCELAMENTOS'
                         formatValor={formatCurrency}
                         filial={filial}
-                        branches={me.branches}
+                        branches={branches}
                         loading={cancelamentos.loading}
                         erro={cancelamentos.erro}
                     />
@@ -131,7 +134,7 @@ export default function Home() {
                         valueKey='VALOR_DEVOLUCOES'
                         formatValor={formatCurrency}
                         filial={filial}
-                        branches={me.branches}
+                        branches={branches}
                         loading={devolucoes.loading}
                         erro={devolucoes.erro}
                     />
@@ -141,7 +144,7 @@ export default function Home() {
                         valueKey='N_CUPONS'
                         formatValor={formatNumber}
                         filial={filial}
-                        branches={me.branches}
+                        branches={branches}
                         loading={cupons.loading}
                         erro={cupons.erro}
                     />
@@ -151,7 +154,7 @@ export default function Home() {
                         valueKey='TICKET_MEDIO'
                         formatValor={formatCurrency}
                         filial={filial}
-                        branches={me.branches}
+                        branches={branches}
                         loading={ticketMedio.loading}
                         erro={ticketMedio.erro}
                     />
