@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { CloseIcon, FilterIcon } from './icons'
 
 type FiltersMenuProps = {
@@ -7,6 +7,18 @@ type FiltersMenuProps = {
 
 export default function FiltersMenu({ children }: FiltersMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
+
+    useEffect(() => {
+        if (!isOpen) return
+        const originalHtml = document.documentElement.style.overflow
+        const originalBody = document.body.style.overflow
+        document.documentElement.style.overflow = 'hidden'
+        document.body.style.overflow = 'hidden'
+        return () => {
+            document.documentElement.style.overflow = originalHtml
+            document.body.style.overflow = originalBody
+        }
+    }, [isOpen])
 
     function fechar() {
         setIsOpen(false)
