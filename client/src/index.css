@@ -2,6 +2,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html,
+body {
+    overflow-x: hidden;
+}
+
 button:not(:disabled),
 [role='button'] {
     cursor: pointer;

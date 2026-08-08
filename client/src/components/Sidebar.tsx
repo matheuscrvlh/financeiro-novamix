@@ -23,14 +23,16 @@ export default function Sidebar({ isAdmin }: SidebarProps) {
 
     return (
         <>
-            <button
-                type='button'
-                onClick={() => setIsOpen(true)}
-                className='fixed top-4 left-4 z-50 rounded-md bg-orange-base p-2 text-white shadow-lg transition-colors hover:bg-orange-light lg:hidden'
-                aria-label='Abrir menu'
-            >
-                <MenuIcon className='h-6 w-6' />
-            </button>
+            {!isOpen && (
+                <button
+                    type='button'
+                    onClick={() => setIsOpen(true)}
+                    className='fixed top-4 left-4 z-50 rounded-md bg-orange-base p-2 text-white shadow-lg transition-colors hover:bg-orange-light lg:hidden'
+                    aria-label='Abrir menu'
+                >
+                    <MenuIcon className='h-6 w-6' />
+                </button>
+            )}
 
             <div
                 className={`fixed inset-0 z-30 bg-black transition-opacity duration-300 lg:hidden ${
