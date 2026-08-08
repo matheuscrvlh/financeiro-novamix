@@ -9,6 +9,7 @@ import { useMe } from '../hooks/useMe'
 import { useRelatorio } from '../hooks/useRelatorio'
 import { formatCurrency, formatNumber } from '../lib/format'
 import { comFiltroEcommerce } from '../constants/filiais'
+import { getPresetRange } from '../lib/date'
 import type {
     CancelamentosRow,
     CuponsRow,
@@ -19,20 +20,11 @@ import type {
     VendaBrutaRow,
 } from '../types/financeiro'
 
-function defaultInicio() {
-    const now = new Date()
-    return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
-}
-
-function defaultFim() {
-    return new Date().toISOString().slice(0, 10)
-}
-
 export default function Home() {
     const { me, loading: loadingMe, error: meError } = useMe()
 
-    const [inicio, setInicio] = useState(defaultInicio())
-    const [fim, setFim] = useState(defaultFim())
+    const [inicio, setInicio] = useState(() => getPresetRange('hoje').inicio)
+    const [fim, setFim] = useState(() => getPresetRange('hoje').fim)
     const [selecionadas, setSelecionadas] = useState<number[]>([])
 
     const branchesDisponiveis = me ? comFiltroEcommerce(me.branches) : []
