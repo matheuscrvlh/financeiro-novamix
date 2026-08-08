@@ -35,16 +35,14 @@ export default function Sidebar({ isAdmin }: SidebarProps) {
 
     return (
         <>
-            {!isOpen && (
-                <button
-                    type='button'
-                    onClick={() => setIsOpen(true)}
-                    className='fixed top-4 left-4 z-50 rounded-md bg-orange-base p-2 text-white shadow-lg transition-colors hover:bg-orange-light lg:hidden'
-                    aria-label='Abrir menu'
-                >
-                    <MenuIcon className='h-6 w-6' />
-                </button>
-            )}
+            <button
+                type='button'
+                onClick={() => setIsOpen((v) => !v)}
+                className='fixed top-4 left-4 z-50 rounded-md bg-orange-base p-2 text-white shadow-lg transition-colors hover:bg-orange-light lg:hidden'
+                aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
+            >
+                {isOpen ? <CloseIcon className='h-6 w-6' /> : <MenuIcon className='h-6 w-6' />}
+            </button>
 
             <div
                 className={`fixed inset-0 z-30 bg-black transition-opacity duration-300 lg:hidden ${
@@ -58,17 +56,7 @@ export default function Sidebar({ isAdmin }: SidebarProps) {
                     isOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}
             >
-                <div className='flex items-center justify-between px-4 pt-4 lg:justify-center'>
-                    <Logo compact />
-                    <button
-                        type='button'
-                        onClick={fechar}
-                        className='rounded-md p-1 text-gray-dark hover:text-orange-base dark:text-dark-text-muted dark:hover:text-orange-light lg:hidden'
-                        aria-label='Fechar menu'
-                    >
-                        <CloseIcon className='h-6 w-6' />
-                    </button>
-                </div>
+                <Logo compact />
 
                 <nav className='mt-8 flex flex-1 flex-col gap-2 px-4'>
                     <NavLink

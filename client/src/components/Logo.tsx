@@ -6,11 +6,11 @@ type LogoProps = {
 
 export default function Logo({ compact = false }: LogoProps) {
     return (
-        <div className={`flex items-center justify-center ${compact ? '' : 'px-6 py-6'}`}>
+        <div className={`flex items-center justify-center ${compact ? 'py-4' : 'px-6 py-6'}`}>
             <img
                 src={logoNm}
                 alt='Logo Novamix'
-                className={`rounded-lg bg-white dark:p-1.5 ${compact ? 'h-12 w-auto' : 'w-[70%] max-w-48'}`}
+                className={`rounded-lg bg-white dark:p-1.5 ${compact ? 'w-[55%] max-w-32' : 'w-[70%] max-w-48'}`}
             />
         </div>
     )
