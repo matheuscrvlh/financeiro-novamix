@@ -36,19 +36,19 @@ export default function VendaRankingChart({ rows, selecionadas, loading, erro }:
             )}
 
             {!erro && (
-                <div className='mt-6 overflow-x-auto'>
-                    <div className='flex h-64 min-w-max items-end gap-6 px-1'>
+                <div className='mt-6 min-w-0 overflow-x-auto'>
+                    <div className='flex h-72 min-w-full items-end gap-3 px-1 sm:gap-6 lg:h-96'>
                         {ranking.map((item, indice) => {
                             const altura = loading ? 0 : Math.max((item.valor / maior) * 100, 2)
                             const cor = RAMP_SEQUENCIAL[Math.min(indice, RAMP_SEQUENCIAL.length - 1)]
 
                             return (
-                                <div key={item.id} className='flex h-full w-16 shrink-0 flex-col items-center justify-end gap-2'>
-                                    <span className='text-xs font-semibold tabular-nums text-gray-text dark:text-dark-text'>
+                                <div key={item.id} className='flex h-full min-w-20 flex-1 flex-col items-center justify-end gap-2'>
+                                    <span className='w-full text-center text-xs font-semibold tabular-nums text-gray-text dark:text-dark-text'>
                                         {loading ? '...' : formatCurrency(item.valor)}
                                     </span>
                                     <div
-                                        className='w-10 rounded-t-sm bg-gray transition-all duration-300 hover:brightness-110 dark:bg-dark-surface-2'
+                                        className='w-full max-w-16 rounded-t-sm bg-gray transition-all duration-300 hover:brightness-110 dark:bg-dark-surface-2'
                                         style={{ height: `${altura}%`, backgroundColor: cor }}
                                         title={`${item.nome}: ${formatCurrency(item.valor)}`}
                                         tabIndex={0}

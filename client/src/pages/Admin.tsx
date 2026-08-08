@@ -46,7 +46,7 @@ export default function Admin() {
         return (
             <div className='flex w-full min-h-screen bg-gray dark:bg-dark-bg'>
                 <Sidebar isAdmin={false} />
-                <main className='flex-1 flex items-center justify-center lg:ml-64'>
+                <main className='flex-1 min-w-0 flex items-center justify-center lg:ml-64'>
                     <span className='text-sm text-gray-dark dark:text-dark-text-muted'>Carregando...</span>
                 </main>
             </div>
@@ -57,7 +57,7 @@ export default function Admin() {
         return (
             <div className='flex w-full min-h-screen bg-gray dark:bg-dark-bg'>
                 <Sidebar isAdmin={false} />
-                <main className='flex-1 flex items-center justify-center lg:ml-64'>
+                <main className='flex-1 min-w-0 flex items-center justify-center lg:ml-64'>
                     <span className='text-sm text-red-base'>{meError ?? 'Não foi possível carregar seus dados.'}</span>
                 </main>
             </div>
@@ -68,7 +68,7 @@ export default function Admin() {
         return (
             <div className='flex w-full min-h-screen bg-gray dark:bg-dark-bg'>
                 <Sidebar isAdmin={false} />
-                <main className='flex-1 flex items-center justify-center lg:ml-64'>
+                <main className='flex-1 min-w-0 flex items-center justify-center lg:ml-64'>
                     <span className='text-sm font-medium text-red-base'>Acesso restrito a administradores.</span>
                 </main>
             </div>
@@ -79,7 +79,7 @@ export default function Admin() {
         <div className='flex w-full min-h-screen bg-gray dark:bg-dark-bg'>
             <Sidebar isAdmin={me.isAdmin} />
 
-            <main className='flex-1 flex flex-col lg:ml-64'>
+            <main className='flex-1 min-w-0 flex flex-col lg:ml-64'>
                 <section className='flex-1 w-full max-w-6xl mx-auto px-6 pt-20 pb-10 lg:pt-10'>
                     <h1 className='text-2xl font-semibold text-gray-text dark:text-dark-text mb-1'>Admin</h1>
                     <p className='text-sm text-gray-dark dark:text-dark-text-muted mb-6'>
